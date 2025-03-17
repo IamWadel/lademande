@@ -2,39 +2,67 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Demande en Mariage AR</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ar.js@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.2"></script>
+
     <style>
-        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            font-family: Arial, sans-serif; 
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
         #message {
             position: absolute;
-            bottom: 10%;
-            width: 100%;
+            bottom: 8%;
+            width: 90%;
             text-align: center;
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: white;
             background: rgba(0, 0, 0, 0.7);
             padding: 15px;
-            display: block;
             border-radius: 10px;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .heart {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background-color: red;
+            clip-path: path("M50 15C35 -10 0 -10 0 30C0 50 50 90 50 90C50 90 100 50 100 30C100 -10 65 -10 50 15Z");
+            animation: bounce 0.6s infinite alternate ease-in-out;
+            filter: drop-shadow(0px 0px 10px rgba(255,0,0,0.5));
         }
     </style>
 </head>
 <body>
+
     <div id="message">Veux-tu m'épouser ? ❤️</div>
+    <div class="heart"></div>
 
     <a-scene embedded arjs>
-        <!-- Texte flottant directement affiché -->
-        <a-entity position="0 0.3 -1">
-            <a-text value="Veux-tu m'épouser ?" align="center" color="red" width="1.5" scale="1.5 1.5 1.5"></a-text>
+        <a-entity position="0 0.5 -1">
+            <a-text value="Veux-tu m'épouser ?" align="center" color="red" width="2" scale="1.5 1.5 1.5"></a-text>
         </a-entity>
         
-        <!-- Feu d'artifice -->
         <a-entity id="fireworks"></a-entity>
-
         <a-entity camera></a-entity>
     </a-scene>
 
@@ -64,33 +92,44 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        setInterval(createFirework, 2000);
+        // Feu d'artifice pendant 1 minute
+        let fireworkInterval = setInterval(createFirework, 2000);
+        setTimeout(() => clearInterval(fireworkInterval), 60000);
     </script>
-<script>
-    function lancerFeuArtifice() {
-        var count = 200;
-        var defaults = {
-            origin: { y: 0.7 }
-        };
 
-        function fire(particleRatio, opts) {
-            confetti(Object.assign({}, defaults, opts, {
-                particleCount: Math.floor(count * particleRatio)
-            }));
+    <script>
+        function lancerFeuArtifice() {
+            var count = 200;
+            var defaults = {
+                origin: { y: 0.7 }
+            };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            let duration = 60000; // 1 minute
+            let end = Date.now() + duration;
+
+            (function frame() {
+                let timeLeft = end - Date.now();
+                if (timeLeft > 0) {
+                    fire(0.25, { spread: 26, startVelocity: 55 });
+                    fire(0.2, { spread: 60 });
+                    fire(0.35, { spread: 100, decay: 0.91 });
+                    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92 });
+                    fire(0.1, { spread: 120, startVelocity: 45 });
+                    requestAnimationFrame(frame);
+                }
+            })();
         }
 
-        fire(0.25, { spread: 26, startVelocity: 55 });
-        fire(0.2, { spread: 60 });
-        fire(0.35, { spread: 100, decay: 0.91 });
-        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92 });
-        fire(0.1, { spread: 120, startVelocity: 45 });
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        setTimeout(lancerFeuArtifice, 1000); // Lance après 1 seconde
-    });
-</script>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.2"></script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(lancerFeuArtifice, 1000); // Commence après 1 seconde
+        });
+    </script>
 
 </body>
 </html>
