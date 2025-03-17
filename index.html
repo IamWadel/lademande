@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande en Mariage AR</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+        #message {
+            position: absolute;
+            bottom: 10%;
+            width: 100%;
+            text-align: center;
+            font-size: 1.8rem;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            display: block;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="message">Veux-tu m'épouser ? ❤️</div>
+
+    <a-scene embedded arjs>
+        <!-- Texte flottant directement affiché -->
+        <a-entity position="0 0.3 -1">
+            <a-text value="Veux-tu m'épouser ?" align="center" color="red" width="1.5" scale="1.5 1.5 1.5"></a-text>
+        </a-entity>
+        
+        <!-- Feu d'artifice -->
+        <a-entity id="fireworks"></a-entity>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        function createFirework() {
+            let scene = document.querySelector("a-scene");
+            for (let i = 0; i < 20; i++) {
+                let particle = document.createElement("a-sphere");
+                particle.setAttribute("radius", "0.05");
+                particle.setAttribute("color", getRandomColor());
+                particle.setAttribute("position", `0 0 -1`);
+                scene.appendChild(particle);
+                
+                let x = (Math.random() - 0.5) * 2;
+                let y = Math.random() * 2;
+                let z = (Math.random() - 0.5) * 2;
+                
+                gsap.to(particle.object3D.position, {
+                    x: x, y: y, z: z, duration: 1.5,
+                    onComplete: () => particle.remove()
+                });
+            }
+        }
+
+        function getRandomColor() {
+            const colors = ["red", "yellow", "blue", "green", "orange", "purple"];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        setInterval(createFirework, 2000);
+    </script>
+</body>
+</html>
