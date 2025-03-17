@@ -7,8 +7,7 @@
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ar.js@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.2"></script>
-
+    
     <style>
         body {
             margin: 0; 
@@ -32,6 +31,7 @@
             padding: 15px;
             border-radius: 10px;
             font-weight: bold;
+            opacity: 0;
         }
 
         @keyframes bounce {
@@ -44,22 +44,25 @@
             top: 45%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             background-color: red;
-            clip-path: path("M50 15C35 -10 0 -10 0 30C0 50 50 90 50 90C50 90 100 50 100 30C100 -10 65 -10 50 15Z");
+            clip-path: polygon(50% 0%, 100% 35%, 85% 100%, 50% 85%, 15% 100%, 0% 35%);
             animation: bounce 0.6s infinite alternate ease-in-out;
             filter: drop-shadow(0px 0px 10px rgba(255,0,0,0.5));
         }
     </style>
 </head>
 <body>
-
+    <audio id="background-music" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+    </audio>
+    
     <div id="message">Veux-tu m'épouser ? ❤️</div>
     <div class="heart"></div>
 
     <a-scene embedded arjs>
-        <a-entity position="0 0.5 -1">
+        <a-entity position="0 0.5 -1" id="proposal-text" opacity="0">
             <a-text value="Veux-tu m'épouser ?" align="center" color="red" width="1.5" scale="1.5 1.5 1.5"></a-text>
         </a-entity>
         
@@ -70,9 +73,9 @@
     <script>
         function createFirework() {
             let scene = document.querySelector("a-scene");
-            for (let i = 0; i < 10; i++) {  // Moins de particules pour éviter la saturation
+            for (let i = 0; i < 10; i++) {
                 let particle = document.createElement("a-sphere");
-                particle.setAttribute("radius", "0.02");  // Plus petit pour un effet subtil
+                particle.setAttribute("radius", "0.02");
                 particle.setAttribute("color", getRandomColor());
                 particle.setAttribute("position", `0 0 -1`);
                 scene.appendChild(particle);
@@ -93,43 +96,17 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        // Feu d'artifice pendant 1 minute avec un déclenchement toutes les 3 secondes
-        let fireworkInterval = setInterval(createFirework, 3000);
-        setTimeout(() => clearInterval(fireworkInterval), 60000);
-    </script>
-
-    <script>
-        function lancerFeuArtifice() {
-            var count = 80; // Moins de particules pour un effet plus doux
-            var defaults = {
-                origin: { y: 0.7 },
-                decay: 0.9  // Particules qui disparaissent en douceur
-            };
-
-            function fire(particleRatio, opts) {
-                confetti(Object.assign({}, defaults, opts, {
-                    particleCount: Math.floor(count * particleRatio)
-                }));
-            }
-
-            let duration = 60000; // 1 minute
-            let end = Date.now() + duration;
-
-            (function frame() {
-                let timeLeft = end - Date.now();
-                if (timeLeft > 0) {
-                    fire(0.25, { spread: 26, startVelocity: 35 });
-                    fire(0.2, { spread: 50 });
-                    fire(0.3, { spread: 80, decay: 0.9 });
-                    requestAnimationFrame(frame);
-                }
-            })();
-        }
-
+        // Affichage progressif du message
         document.addEventListener("DOMContentLoaded", function() {
-            setTimeout(lancerFeuArtifice, 1000); // Commence après 1 seconde
+            let message = document.getElementById("message");
+            let proposalText = document.getElementById("proposal-text");
+            let music = document.getElementById("background-music");
+            
+            gsap.to(message, { opacity: 1, duration: 2, delay: 1 });
+            gsap.to(proposalText, { opacity: 1, duration: 2, delay: 1 });
+            
+            setTimeout(() => music.play(), 1000);
         });
     </script>
-
 </body>
 </html>
