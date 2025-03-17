@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Demande en Mariage AR</title>
+    <title>Veux-tu m'épouser ? ❤️</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ar.js@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.2"></script>
 
     <style>
-        body { 
+        body {
             margin: 0; 
             overflow: hidden; 
-            font-family: Arial, sans-serif; 
+            font-family: Arial, sans-serif;
             background-color: black;
             display: flex;
             justify-content: center;
@@ -23,7 +23,7 @@
 
         #message {
             position: absolute;
-            bottom: 8%;
+            bottom: 10%;
             width: 90%;
             text-align: center;
             font-size: 2rem;
@@ -31,16 +31,17 @@
             background: rgba(0, 0, 0, 0.7);
             padding: 15px;
             border-radius: 10px;
+            font-weight: bold;
         }
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-15px); }
         }
 
         .heart {
             position: absolute;
-            top: 40%;
+            top: 45%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 80px;
@@ -59,7 +60,7 @@
 
     <a-scene embedded arjs>
         <a-entity position="0 0.5 -1">
-            <a-text value="Veux-tu m'épouser ?" align="center" color="red" width="2" scale="1.5 1.5 1.5"></a-text>
+            <a-text value="Veux-tu m'épouser ?" align="center" color="red" width="1.5" scale="1.5 1.5 1.5"></a-text>
         </a-entity>
         
         <a-entity id="fireworks"></a-entity>
@@ -69,39 +70,40 @@
     <script>
         function createFirework() {
             let scene = document.querySelector("a-scene");
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 10; i++) {  // Moins de particules pour éviter la saturation
                 let particle = document.createElement("a-sphere");
-                particle.setAttribute("radius", "0.05");
+                particle.setAttribute("radius", "0.02");  // Plus petit pour un effet subtil
                 particle.setAttribute("color", getRandomColor());
                 particle.setAttribute("position", `0 0 -1`);
                 scene.appendChild(particle);
                 
-                let x = (Math.random() - 0.5) * 2;
-                let y = Math.random() * 2;
-                let z = (Math.random() - 0.5) * 2;
+                let x = (Math.random() - 0.5) * 1.5;
+                let y = Math.random() * 1.5;
+                let z = (Math.random() - 0.5) * 1.5;
                 
                 gsap.to(particle.object3D.position, {
-                    x: x, y: y, z: z, duration: 1.5,
+                    x: x, y: y, z: z, duration: 2,
                     onComplete: () => particle.remove()
                 });
             }
         }
 
         function getRandomColor() {
-            const colors = ["red", "yellow", "blue", "green", "orange", "purple"];
+            const colors = ["#ff5050", "#ffcc00", "#66ff66", "#3399ff", "#ff66ff"];
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        // Feu d'artifice pendant 1 minute
-        let fireworkInterval = setInterval(createFirework, 2000);
+        // Feu d'artifice pendant 1 minute avec un déclenchement toutes les 3 secondes
+        let fireworkInterval = setInterval(createFirework, 3000);
         setTimeout(() => clearInterval(fireworkInterval), 60000);
     </script>
 
     <script>
         function lancerFeuArtifice() {
-            var count = 200;
+            var count = 80; // Moins de particules pour un effet plus doux
             var defaults = {
-                origin: { y: 0.7 }
+                origin: { y: 0.7 },
+                decay: 0.9  // Particules qui disparaissent en douceur
             };
 
             function fire(particleRatio, opts) {
@@ -116,11 +118,9 @@
             (function frame() {
                 let timeLeft = end - Date.now();
                 if (timeLeft > 0) {
-                    fire(0.25, { spread: 26, startVelocity: 55 });
-                    fire(0.2, { spread: 60 });
-                    fire(0.35, { spread: 100, decay: 0.91 });
-                    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92 });
-                    fire(0.1, { spread: 120, startVelocity: 45 });
+                    fire(0.25, { spread: 26, startVelocity: 35 });
+                    fire(0.2, { spread: 50 });
+                    fire(0.3, { spread: 80, decay: 0.9 });
                     requestAnimationFrame(frame);
                 }
             })();
