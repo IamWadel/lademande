@@ -7,6 +7,7 @@
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ar.js@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -156,25 +157,13 @@
                 setInterval(createFirework, 1000);
             }
 
-            function launchConfetti() {
-                let scene = document.querySelector("a-scene");
-                for (let i = 0; i < 50; i++) {
-                    let confetti = document.createElement("a-sphere");
-                    confetti.setAttribute("radius", "0.05");
-                        confetti.setAttribute("color", getRandomColor());
-                        confetti.setAttribute("position", `0 1 -1`);
-                        scene.appendChild(confetti);
-
-                        let x = (Math.random() - 0.5) * 3;
-                        let y = Math.random() * 3;
-                        let z = (Math.random() - 0.5) * 3;
-
-                        gsap.to(confetti.object3D.position, {
-                            x: x, y: y, z: z, duration: 3,
-                            onComplete: () => confetti.remove()
-                        });
-                    }
-                }
+function launchConfetti() {
+    confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
+}
             });
         </script>
     </body>
