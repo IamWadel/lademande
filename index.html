@@ -2,16 +2,15 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, orientation: portrait">
     <title>Veux-tu m'épouser ? ❤️</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ar.js@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    
     <style>
         body {
-            margin: 0; 
-            overflow: hidden; 
+            margin: 0;
+            overflow: hidden;
             font-family: Arial, sans-serif;
             background-color: black;
             display: flex;
@@ -19,7 +18,6 @@
             align-items: center;
             height: 100vh;
         }
-
         #message {
             position: absolute;
             bottom: 10%;
@@ -33,12 +31,10 @@
             font-weight: bold;
             opacity: 0;
         }
-
         @keyframes glow {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.6; }
         }
-
         .heart {
             position: absolute;
             top: 45%;
@@ -47,6 +43,23 @@
             width: 120px;
             height: 120px;
             animation: glow 1.5s infinite alternate ease-in-out;
+            filter: drop-shadow(0 0 10px red);
+        }
+        .button-container {
+            position: absolute;
+            bottom: 5%;
+            width: 100%;
+            text-align: center;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 1.2rem;
+            background-color: #ff5050;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -54,65 +67,115 @@
     <audio id="background-music" loop>
         <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
     </audio>
-    
+    <audio id="firework-sound">
+        <source src="firework.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="button-click">
+        <source src="click.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="voice-over">
+        <source src="voice.mp3" type="audio/mpeg">
+    </audio>
     <div id="message">Veux-tu m'épouser ? ❤️</div>
-    
     <svg class="heart" viewBox="0 0 32 29.6" xmlns="http://www.w3.org/2000/svg">
         <path fill="red" d="M23.6,0A8.6,8.6,0,0,0,16,4.3,8.6,8.6,0,0,0,8.4,0,8.4,8.4,0,0,0,0,8.3c0,4.8,3.9,8.2,10.1,13.9A55.7,55.7,0,0,0,16,29.6a55.7,55.7,0,0,0,5.9-7.4C28.1,16.5,32,13.1,32,8.3A8.4,8.4,0,0,0,23.6,0Z"/>
     </svg>
-
-    <a-scene embedded arjs>
-        <a-entity position="0 0.5 -1" id="proposal-text" opacity="0">
-            <a-text value="Veux-tu m'épouser ?" align="center" color="white" width="1.5" scale="1.5 1.5 1.5"></a-text>
-        </a-entity>
-        
-        <a-entity id="fireworks"></a-entity>
+    <div class="button-container">
+        <button id="yes-button" class="button">Oui</button>
+        <button id="no-button" class="button">Non</button>
+    </div>
+    <a-scene embedded arjs="detectionMode: mono; trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
+        <a-marker preset="hiro">
+            <a-entity position="0 0.5 0" id="proposal-text" opacity="0">
+                <a-text value="Veux-tu m'épouser ?" align="center" color="white" width="1.5" scale="1.5 1.5 1.5"></a-text>
+            </a-entity>
+            <a-entity id="fireworks"></a-entity>
+            <a-entity id="ring" gltf-model="url(https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models/2.0/SimpleRing/glTF-Binary/SimpleRing.glb)" scale=".01 .01 .01" position="0 .2 0" visible="false"></a-entity>
+        </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
-
     <script>
-        function createFirework() {
-            let scene = document.querySelector("a-scene");
-            for (let i = 0; i < 15; i++) {
-                let particle = document.createElement("a-sphere");
-                particle.setAttribute("radius", "0.02");
-                particle.setAttribute("color", getRandomColor());
-                particle.setAttribute("position", `0 0 -1`);
-                scene.appendChild(particle);
-                
-                let x = (Math.random() - 0.5) * 2;
-                let y = Math.random() * 2;
-                let z = (Math.random() - 0.5) * 2;
-                
-                gsap.to(particle.object3D.position, {
-                    x: x, y: y, z: z, duration: 2,
-                    onComplete: () => particle.remove()
-                });
-            }
-        }
-
-        function getRandomColor() {
-            const colors = ["#ff5050", "#ffcc00", "#66ff66", "#3399ff", "#ff66ff"];
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
-
-        function launchFireworks() {
-            setInterval(createFirework, 1000);
-        }
-
         document.addEventListener("DOMContentLoaded", function() {
             let message = document.getElementById("message");
             let proposalText = document.getElementById("proposal-text");
             let music = document.getElementById("background-music");
-            
+            let fireworkSound = document.getElementById("firework-sound");
+            let buttonClick = document.getElementById("button-click");
+            let voiceOver = document.getElementById("voice-over");
+            let yesButton = document.getElementById("yes-button");
+            let noButton = document.getElementById("no-button");
+            let ring = document.getElementById("ring");
+
             gsap.to(message, { opacity: 1, duration: 2, delay: 1 });
             gsap.to(proposalText, { opacity: 1, duration: 2, delay: 1 });
-            
+
             setTimeout(() => {
                 music.play();
+                voiceOver.play();
                 launchFireworks();
+                ring.setAttribute("visible", "true")
             }, 1000);
-        });
-    </script>
-</body>
+
+            yesButton.addEventListener("click", function() {
+                buttonClick.play();
+                launchConfetti();
+            });
+
+            noButton.addEventListener("click", function() {
+                buttonClick.play();
+                message.textContent = "Ce n'est pas grave, je t'aimerai toujours.";
+            });
+
+            function createFirework() {
+                let scene = document.querySelector("a-scene");
+                for (let i = 0; i < 15; i++) {
+                    let particle = document.createElement("a-sphere");
+                    particle.setAttribute("radius", "0.02");
+                    particle.setAttribute("color", getRandomColor());
+                    particle.setAttribute("position", `0 0 -1`);
+                    scene.appendChild(particle);
+
+                    let x = (Math.random() - 0.5) * 2;
+                    let y = Math.random() * 2;
+                    let z = (Math.random() - 0.5) * 2;
+
+                    gsap.to(particle.object3D.position, {
+                        x: x, y: y, z: z, duration: 2,
+                        onComplete: () => particle.remove()
+                    });
+                }
+                fireworkSound.play();
+            }
+
+            function getRandomColor() {
+                const colors = ["#ff5050", "#ffcc00", "#66ff66", "#3399ff", "#ff66ff"];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            function launchFireworks() {
+                setInterval(createFirework, 1000);
+            }
+
+            function launchConfetti() {
+                let scene = document.querySelector("a-scene");
+                for (let i = 0; i < 50; i++) {
+                    let confetti = document.createElement("a-sphere");
+                    confetti.setAttribute("radius", "0.05");
+                        confetti.setAttribute("color", getRandomColor());
+                        confetti.setAttribute("position", `0 1 -1`);
+                        scene.appendChild(confetti);
+
+                        let x = (Math.random() - 0.5) * 3;
+                        let y = Math.random() * 3;
+                        let z = (Math.random() - 0.5) * 3;
+
+                        gsap.to(confetti.object3D.position, {
+                            x: x, y: y, z: z, duration: 3,
+                            onComplete: () => confetti.remove()
+                        });
+                    }
+                }
+            });
+        </script>
+    </body>
 </html>
