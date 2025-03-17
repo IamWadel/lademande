@@ -34,9 +34,9 @@
             opacity: 0;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
+        @keyframes glow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
 
         .heart {
@@ -44,12 +44,9 @@
             top: 45%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
-            background-color: red;
-            clip-path: polygon(50% 0%, 100% 35%, 85% 100%, 50% 85%, 15% 100%, 0% 35%);
-            animation: bounce 0.6s infinite alternate ease-in-out;
-            filter: drop-shadow(0px 0px 10px rgba(255,0,0,0.5));
+            width: 120px;
+            height: 120px;
+            animation: glow 1.5s infinite alternate ease-in-out;
         }
     </style>
 </head>
@@ -59,11 +56,14 @@
     </audio>
     
     <div id="message">Veux-tu m'épouser ? ❤️</div>
-    <div class="heart"></div>
+    
+    <svg class="heart" viewBox="0 0 32 29.6" xmlns="http://www.w3.org/2000/svg">
+        <path fill="red" d="M23.6,0A8.6,8.6,0,0,0,16,4.3,8.6,8.6,0,0,0,8.4,0,8.4,8.4,0,0,0,0,8.3c0,4.8,3.9,8.2,10.1,13.9A55.7,55.7,0,0,0,16,29.6a55.7,55.7,0,0,0,5.9-7.4C28.1,16.5,32,13.1,32,8.3A8.4,8.4,0,0,0,23.6,0Z"/>
+    </svg>
 
     <a-scene embedded arjs>
         <a-entity position="0 0.5 -1" id="proposal-text" opacity="0">
-            <a-text value="Veux-tu m'épouser ?" align="center" color="red" width="1.5" scale="1.5 1.5 1.5"></a-text>
+            <a-text value="Veux-tu m'épouser ?" align="center" color="white" width="1.5" scale="1.5 1.5 1.5"></a-text>
         </a-entity>
         
         <a-entity id="fireworks"></a-entity>
@@ -73,16 +73,16 @@
     <script>
         function createFirework() {
             let scene = document.querySelector("a-scene");
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 15; i++) {
                 let particle = document.createElement("a-sphere");
                 particle.setAttribute("radius", "0.02");
                 particle.setAttribute("color", getRandomColor());
                 particle.setAttribute("position", `0 0 -1`);
                 scene.appendChild(particle);
                 
-                let x = (Math.random() - 0.5) * 1.5;
-                let y = Math.random() * 1.5;
-                let z = (Math.random() - 0.5) * 1.5;
+                let x = (Math.random() - 0.5) * 2;
+                let y = Math.random() * 2;
+                let z = (Math.random() - 0.5) * 2;
                 
                 gsap.to(particle.object3D.position, {
                     x: x, y: y, z: z, duration: 2,
@@ -96,7 +96,10 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        // Affichage progressif du message
+        function launchFireworks() {
+            setInterval(createFirework, 1000);
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             let message = document.getElementById("message");
             let proposalText = document.getElementById("proposal-text");
@@ -105,7 +108,10 @@
             gsap.to(message, { opacity: 1, duration: 2, delay: 1 });
             gsap.to(proposalText, { opacity: 1, duration: 2, delay: 1 });
             
-            setTimeout(() => music.play(), 1000);
+            setTimeout(() => {
+                music.play();
+                launchFireworks();
+            }, 1000);
         });
     </script>
 </body>
