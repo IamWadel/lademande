@@ -117,7 +117,7 @@
     </div>
 
     <div class="buttons">
-        <button class="yes" onclick="celebrate()">Oui</button>
+        <button id="btn-yes" class="yes" onclick="celebrate()">Oui</button>
         <button class="no" onclick="friendZone()">Non</button>
     </div>
 
@@ -137,18 +137,14 @@
             setTimeout(() => music.play(), 1000);
         });
 
-        function celebrate() {
-            var confetti = new Confetti();
-            confetti.setCount(100);
-            confetti.setPower(50);
-            confetti.setSize(1);
-            confetti.setFade(true);
-            confetti.destroyTarget(false);
-
-            // Afficher la bague après le "Oui"
-            document.getElementById("ring-model").setAttribute("visible", "true");
-            document.getElementById("text-ring").setAttribute("visible", "true");
-        }
+      function celebrate() {
+    var confetti = new Confetti('btn-yes'); // ID du bouton "Oui"
+    confetti.setCount(100);
+    confetti.setPower(50);
+    confetti.setSize(1);
+    confetti.setFade(true);
+    confetti.destroyTarget(false);
+}
 
         function friendZone() {
             alert("Tu viens d'entrer dans la Friend Zone 😆");
