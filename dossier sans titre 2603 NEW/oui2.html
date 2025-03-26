@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elle a dit oui !</title>
+    <style>
+        /* Styles généraux */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        body {
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Style pour la vidéo de la caméra */
+        #camera-feed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        /* ❤️ Animation de multiplication des cœurs */
+        .heart-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .heart-container.active {
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .heart-container .heart {
+            animation: none;
+        }
+
+        .heart-container.active .heart {
+            animation: pop 5s forwards;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0) rotate(-45deg);
+            }
+
+            50% {
+                transform: scale(1.5) rotate(-45deg);
+            }
+
+            100% {
+                transform: scale(0) rotate(-45deg);
+            }
+        }
+
+        /* 🌸 Style pour le conteneur de la fleur SVG */
+        #flower-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 240px;
+            display: none;
+        }
+
+        /* Animation d'apparition de la fleur */
+        @keyframes flowerPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* Style pour le message "Mode vie réelle débloquée" */
+        #unlock-message {
+            position: absolute;
+            /* bottom: 10%; */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            color: white;
+            text-align: center;
+            white-space: pre-wrap;
+            display: none;
+            opacity: 0;
+        }
+
+        /* Animation pour le message "Mode vie réelle débloquée" */
+        @keyframes unlockAnimation {
+            0% {
+                opacity: 0;
+                top: 50%; /* Position de départ au centre */
+                transform: translate(-50%, -50%);
+            }
+
+            50% {
+                opacity: 1;
+                top: 50%; /* Le maintient au centre pendant la transition */
+                transform: translate(-50%, -50%);
+            }
+
+            100% {
+                opacity: 1;
+                top: 65%; /* Position finale en bas */
+                transform: translateX(-50%); /* Correction pour rester centré horizontalement */
+            }
+        }
+
+        @keyframes colorChange {
+            0% {
+                color: #ff4081;
+            }
+
+            50% {
+                color: #ffd700;
+            }
+
+            100% {
+                color: #ff4081;
+            }
+        }
+
+        /* Style pour le coeur SVG */
+        .heart {
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            position: absolute;
+            transform: rotate(-45deg);
+        }
+
+        .heart:before,
+        .heart:after {
+            content: "";
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .heart:before {
+            top: -15px;
+            left: 0;
+        }
+
+        .heart:after {
+            left: 15px;
+            top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <video id="camera-feed" autoplay playsinline></video>
+
+    <div class="heart-container" id="heart-container">
+    </div>
+
+    <div id="flower-container">
+        <svg id="flower-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140">
+            <defs>
+                <radialGradient id="petalGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="0%" stop-color="#FF4081" />
+                    <stop offset="100%" stop-color="#FFB2D0" />
+                </radialGradient>
+                <radialGradient id="centerGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="0%" stop-color="#FFD700" />
+                    <stop offset="100%" stop-color="#FFA500" />
+                </radialGradient>
+            </defs>
+            <circle cx="50" cy="40" r="16" fill="url(#centerGradient)" />
+            <g>
+                <path d="M50,25 C60,25 68,35 68,50 C68,65 60,75 50,75 C40,75 32,65 32,50 C32,35 40,25 50,25 Z"
+                    fill="url(#petalGradient)" transform="rotate(0, 50, 50)" />
+                <path d="M50,25 C60,25 68,35 68,50 C68,65 60,75 50,75 C40,75 32,65 32,50 C32,35 40,25 50,25 Z"
+                    fill="url(#petalGradient)" transform="rotate(72, 50, 50)" />
+                <path d="M50,25 C60,25 68,35 68,50 C68,65 60,75 50,75 C40,75 32,65 32,50 C32,35 40,25 50,25 Z"
+                    fill="url(#petalGradient)" transform="rotate(144, 50, 50)" />
+                <path d="M50,25 C60,25 68,35 68,50 C68,65 60,75 50,75 C40,75 32,65 32,50 C32,35 40,25 50,25 Z"
+                    fill="url(#petalGradient)" transform="rotate(216, 50, 50)" />
+                <path d="M50,25 C60,25 68,35 68,50 C68,65 60,75 50,75 C40,75 32,65 32,50 C32,35 40,25 50,25 Z"
+                    fill="url(#petalGradient)" transform="rotate(288, 50, 50)" />
+            </g>
+            <path d="M50,75 L50,120" stroke="#008000" stroke-width="4" />
+            <g id="thorns">
+                <path d="M45,85 L35,90 L45,95 Z" fill="#008000" />
+                <path d="M55,85 L65,90 L55,95 Z" fill="#008000" />
+            </g>
+        </svg>
+    </div>
+
+    <h2 id="unlock-message">Mode vie réelle débloquée</h2>
+
+    <audio id="background-music" loop>
+        <source src="M83_Outro.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const music = document.getElementById("background-music");
+            const heartContainer = document.getElementById("heart-container");
+            const flowerContainer = document.getElementById("flower-container");
+            const unlockMessage = document.getElementById("unlock-message");
+            const cameraFeed = document.getElementById("camera-feed");
+
+            // 🎥 Activer la caméra et afficher le flux
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: "user"
+                        }
+                    })
+                    .then(stream => {
+                        cameraFeed.srcObject = stream;
+                    })
+                    .catch(error => {
+                        console.error("Erreur d'accès à la caméra :", error);
+                    });
+            } else {
+                console.error("getUserMedia non supporté par ce navigateur.");
+            }
+
+            // 🎶 Musique de fond (démarre après 2 secondes)
+            setTimeout(() => {
+                music.play().catch(err => console.log("Lecture automatique bloquée", err));
+            }, 2000);
+
+            // ❤️ Animation de multiplication des cœurs (après 2 secondes)
+            setTimeout(() => {
+                heartContainer.classList.add("active");
+                createHearts();
+            }, 2000);
+
+            // 🌸 Apparition de la fleur (après l'animation des coeurs)
+            setTimeout(() => {
+                flowerContainer.style.display = "block";
+                flowerContainer.style.animation = "flowerPop 2s forwards";
+            }, 7000);
+
+            // 🌸 Disparition de la fleur et affichage du message (10 secondes après l'apparition de la fleur)
+            setTimeout(() => {
+                flowerContainer.style.display = "none";
+                unlockMessage.style.display = "block";
+                unlockMessage.style.animation = "unlockAnimation 3s forwards, colorChange 3s infinite";
+            }, 17000);
+
+            // Fonction pour créer les cœurs SVG
+            function createHearts() {
+                for (let i = 0; i < 50; i++) {
+                    const heart = document.createElement("div");
+                    heart.classList.add("heart");
+                    heart.style.left = Math.random() * 100 + "vw";
+                    heart.style.top = Math.random() * 100 + "vh";
+                    heart.style.animationDelay = Math.random() * 2 + "s";
+
+                    // Calculer la taille minimale du coeur pour qu'il soit entièrement visible
+                    const minSize = Math.max(heart.offsetWidth, heart.offsetHeight);
+                    // S'assurer que le coeur ne dépasse pas de l'écran
+                    const maxX = window.innerWidth - minSize;
+                    const maxY = window.innerHeight - minSize;
+
+                    // Ajuster les positions pour que le centre du cœur reste dans les limites
+                    const heartX = Math.min(maxX, Math.max(0, Math.random() * 100)) + "vw";
+                    const heartY = Math.min(maxY, Math.max(0, Math.random() * 100)) + "vh";
+
+                    heart.style.left = `calc(${heartX} - ${heart.offsetWidth / 2}px)`;
+                    heart.style.top = `calc(${heartY} - ${heart.offsetHeight / 2}px)`;
+
+                    heartContainer.appendChild(heart);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elle a dit oui !</title>
+    <style>
+        /* Styles généraux */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        body {
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ❤️ Animation de multiplication des cœurs */
+        .heart-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .heart-container.active {
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .heart-container .heart {
+            animation: none;
+        }
+
+        .heart-container.active .heart {
+            animation: pop 5s forwards;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0) rotate(-45deg);
+            }
+
+            50% {
+                transform: scale(1.5) rotate(-45deg);
+            }
+
+            100% {
+                transform: scale(0) rotate(-45deg);
+            }
+        }
+
+        /* 🌸 Style pour le conteneur de la fleur SVG */
+        #flower-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 240px;
+            display: none; /* Cacher initialement */
+        }
+
+        /* Animation d'apparition de la fleur */
+        @keyframes flowerPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* Style pour le message "Mode vie réelle débloquée" */
+        #unlock-message {
+            position: absolute;
+            bottom: 10%; /* Message en bas de l'écran */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            color: white;
+            text-align: center;
+            white-space: pre-wrap;
+            display: none;
+            opacity: 0; /* Commence caché */
+        }
+
+        /* Animation pour le message "Mode vie réelle débloquée" */
+        @keyframes unlockAnimation {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, 20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(-50%);
+            }
+        }
+
+        @keyframes colorChange {
+            0% {
+                color: #ff4081;
+            }
+
+            50% {
+                color: #ffd700;
+            }
+
+            100% {
+                color: #ff4081;
+            }
+        }
+
+        /* Style pour le coeur SVG */
+        .heart {
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            position: absolute;
+            transform: rotate(-45deg);
+        }
+
+        .heart:before,
+        .heart:after {
+            content: "";
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .heart:before {
+            top: -25px;
+            left: 0;
+        }
+
+        .heart:after {
+            left: 25px;
+            top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="heart-container" id="heart-container">
+        </div>
+
+    <div id="flower-container">
+        <svg id="flower-svg" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100,20 L130,80 H70 Z" fill="#FF4081" />
+            <path d="M100,20 L170,80 L130,140 L70,140 L30,80 L70,20 Z" fill="#FF4081" transform="rotate(72,100,100)" />
+            <path d="M100,20 L170,80 L130,140 L70,140 L30,80 L70,20 Z" fill="#FF4081" transform="rotate(72,100,100)" />
+            <path d="M100,20 L130,80 H70 Z" fill="#FF4081" transform="rotate(144,100,100)" />
+            <path d="M100,20 L170,80 L130,140 L70,140 L30,80 L70,20 Z" fill="#FF4081" transform="rotate(144,100,100)" />
+            <path d="M100,20 L130,80 H70 Z" fill="#FF4081" transform="rotate(216,100,100)" />
+            <path d="M100,20 L170,80 L130,140 L70,140 L30,80 L70,80 L70,20 Z" fill="#FF4081" transform="rotate(216,100,100)" />
+            <path d="M100,20 L130,80 H70 Z" fill="#FF4081" transform="rotate(288,100,100)" />
+            <path d="M100,20 L170,80 L130,140 L70,140 L30,80 L70,20 Z" fill="#FF4081" transform="rotate(288,100,100)" />
+            <circle cx="100" cy="100" r="30" fill="#FFD700" />
+            <path d="M100,130 L100,220" stroke="#008000" stroke-width="5" />
+        </svg>
+    </div>
+
+    <h2 id="unlock-message">Mode vie réelle débloquée</h2>
+
+    <audio id="background-music" loop>
+        <source src="M83_Outro.mp3" type="audio/mpeg">
+    </audio>
+        <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const loadingBar = document.getElementById("loading-bar");
+            let index = 0;
+
+            // 🎥 Active la caméra dès le chargement
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+                .then(stream => { }) // On ne fait rien avec le flux ici
+                .catch(error => {
+                    console.error("Accès à la caméra refusé :", error);
+                });
+
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const music = document.getElementById("background-music");
+            const heartContainer = document.getElementById("heart-container");
+            const flowerContainer = document.getElementById("flower-container");
+            const unlockMessage = document.getElementById("unlock-message");
+
+            // 🎶 Musique de fond (démarre après 2 secondes)
+            setTimeout(() => {
+                music.play().catch(err => console.log("Lecture automatique bloquée", err));
+            }, 2000);
+
+            // ❤️ Animation de multiplication des cœurs (après 2 secondes)
+            setTimeout(() => {
+                heartContainer.classList.add("active");
+                createHearts();
+            }, 2000);
+
+            // 🌸 Apparition de la fleur (après l'animation des coeurs)
+            setTimeout(() => {
+                flowerContainer.style.display = "block";
+                flowerContainer.style.animation = "flowerPop 2s forwards";
+            }, 7000); // Ajuster le délai pour que la fleur apparaisse après l'animation des coeurs
+
+            // 🌸 Disparition de la fleur et affichage du message (10 secondes après l'apparition de la fleur)
+            setTimeout(() => {
+                flowerContainer.style.display = "none";
+                unlockMessage.style.display = "block";
+                unlockMessage.style.animation = "unlockAnimation 3s forwards, colorChange 3s infinite";
+            }, 17000); // 7000 (apparition coeurs) + 10000 (durée d'affichage fleur)
+
+            // Fonction pour créer les cœurs SVG
+            function createHearts() {
+                for (let i = 0; i < 50; i++) {
+                    const heart = document.createElement("div");
+                    heart.classList.add("heart");
+                    heart.style.left = Math.random() * 100 + "vw";
+                    heart.style.top = Math.random() * 100 + "vh";
+                    heart.style.animationDelay = Math.random() * 2 + "s"; // Ajout d'un délai aléatoire
+                    heartContainer.appendChild(heart);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

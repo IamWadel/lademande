@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chargement...</title>
+    <style>
+        /* Styles généraux */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        body {
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ⏳ Barre de chargement */
+        #loading-container {
+            width: 80%;
+            height: 60px;
+            background-color: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #loading-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #ff4081;
+            transition: width 0.3s linear;
+            border-radius: 10px;
+        }
+
+        #loading-text {
+            position: absolute;
+            color: white;
+            font-size: 1.5rem;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading-container">
+        <div id="loading-bar"></div>
+        <div id="loading-text">Chargement du niveau en cours ...</div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const loadingBar = document.getElementById("loading-bar");
+            let index = 0;
+
+            // 🎥 Active la caméra dès le chargement
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+                .then(stream => { }) // On ne fait rien avec le flux ici
+                .catch(error => {
+                    console.error("Accès à la caméra refusé :", error);
+                });
+
+            // ⏳ Barre de chargement stylisée
+            const loadingInterval = setInterval(() => {
+                index += 1;
+                loadingBar.style.width = index + "%";
+
+                // Ajouter des effets visuels
+                loadingBar.style.backgroundColor = `hsl(${index * 3.6}, 100%, 50%)`;
+                loadingBar.style.boxShadow = `0 0 10px hsl(${index * 3.6}, 100%, 50%)`;
+
+                if (index >= 100) {
+                    clearInterval(loadingInterval);
+                    // Redirection vers la page de demande
+                    window.location.href = "demande.html";
+                }
+            }, 150); // Ajustez la vitesse de la barre de chargement
+        });
+    </script>
+</body>
+
+</html>

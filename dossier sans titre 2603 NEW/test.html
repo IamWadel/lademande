@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande en mariage</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #loading-bar {
+            width: 80%;
+            height: 20px;
+            background: gray;
+            border-radius: 10px;
+            overflow: hidden;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        #progress {
+            height: 100%;
+            width: 0;
+            background: pink;
+            transition: width 15s linear;
+        }
+        #proposal, #hearts, #flower, #real-life-mode {
+            display: none;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 18px;
+            background: pink;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .heart {
+            position: absolute;
+            font-size: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-bar">
+        <div id="progress"></div>
+        <p>Niveau en cours de chargement...</p>
+    </div>
+
+    <div id="proposal">
+        <h1>Inès, veux-tu m'épouser ?</h1>
+        <button class="button" onclick="showHearts()">Oui</button>
+        <button class="button" onclick="alert('Réfléchis bien 😜')">Non</button>
+    </div>
+
+    <div id="hearts"></div>
+
+    <div id="flower">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" fill="pink" />
+        </svg>
+    </div>
+
+    <div id="real-life-mode">
+        <p style="color: pink; font-size: 20px;">Mode vie réelle</p>
+        <p style="color: lightpink; font-size: 20px;">débloquée</p>
+    </div>
+
+    <script>
+        function startLoading() {
+            document.getElementById('progress').style.width = '100%';
+            setTimeout(() => {
+                document.getElementById('loading-bar').style.display = 'none';
+                document.getElementById('proposal').style.display = 'block';
+            }, 15000);
+        }
+
+        function showHearts() {
+            document.getElementById('proposal').style.display = 'none';
+            let heartsContainer = document.getElementById('hearts');
+            heartsContainer.style.display = 'block';
+            for (let i = 0; i < 10; i++) {
+                let heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = Math.random() * 100 + 'vh';
+                heartsContainer.appendChild(heart);
+            }
+            setTimeout(() => {
+                heartsContainer.style.display = 'none';
+                document.getElementById('flower').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('real-life-mode').style.display = 'block';
+                }, 2000);
+            }, 3000);
+        }
+
+        startLoading();
+    </script>
+</body>
+</html>
